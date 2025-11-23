@@ -51,7 +51,7 @@ CREATE TABLE discussion_reactions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 -- ป้องกันกดซ้ำคนเดิม
-CREATE UNIQUE INDEX unique_reaction_per_userป
+CREATE UNIQUE INDEX unique_reaction_per_user
 ON discussion_reactions(discussion_id, user_name);
 
 --สร้าง ENUM สำหรับ rating_type
