@@ -1,13 +1,6 @@
 package infoDB
 
 import (
-	"errors"
-	"os"
-	"database/sql"
-	_"github.com/lib/pq"
-	"log"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"time"
 )
 
@@ -25,7 +18,7 @@ type Cat struct{
 
 // GET /cats
 func GetCats() ([]Cat, error) {
-    // SQL query
+    
     rows, err := db.Query(`
         SELECT id, name, origin, description, care_instructions, image_url,	created_at,	updated_at
         FROM cat_breeds
@@ -48,7 +41,9 @@ func GetCats() ([]Cat, error) {
 						&cat.Origin, 
 						&cat.Description, 
 						&cat.Care, 
-						&cat.ImageURL,)
+						&cat.ImageURL,
+						&cat.CreatedAt,
+            			&cat.UpdatedAt,)
 
        if err != nil { 
 		return nil, err 
@@ -60,22 +55,25 @@ func GetCats() ([]Cat, error) {
 		return nil, err 
 	}
 
-    return cats, nil
+    return cats, err
 }
 
+// GET /cat
 func GetCat(id int) (Cat, error){
 	var cat Cat
-	rows err := QueryRow("
+	row:= db.QueryRow(`
 		SELECT id, name, origin, description, care_instructions, image_url,	created_at,	updated_at
 		FROM cat_breeds
-		WHERE id = $1;")
+		WHERE id = $1;`,id)
 	
 	err := row.Scan(&cat.ID, 
 					&cat.Name, 
 					&cat.Origin, 
 					&cat.Description, 
 					&cat.Care, 
-					&cat.ImageURL,)
+					&cat.ImageURL,
+					&cat.CreatedAt,
+        			&cat.UpdatedAt,)
 
 	if err != nil{
 		return Cat{}, err
@@ -84,6 +82,7 @@ func GetCat(id int) (Cat, error){
 	return cat, err
 }
 
+// GREATE /cat
 func CreateCat(cat *Cat) error {
 	
 	row := db.QueryRow(
@@ -106,6 +105,7 @@ func CreateCat(cat *Cat) error {
 	return err
 }
 
+// UPDATE /cat
 func UpdateCat(id int, in *Cat) (Cat, error) {
 	var cat Cat
 	row := db.QueryRow(
@@ -138,6 +138,7 @@ func UpdateCat(id int, in *Cat) (Cat, error) {
 		return cat, err
 }
 
+// DELETE /cat
 func DeleteCat(id int) error{
 	_, err := db.Exec(
 		"DELETE FROM cat_breeds WHERE id=$1;",
