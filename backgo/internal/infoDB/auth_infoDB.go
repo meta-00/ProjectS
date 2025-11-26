@@ -1,7 +1,6 @@
 package infoDB
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -44,7 +43,6 @@ type CustomClaims struct {
 	Roles    []string `json:"roles"`
 	jwt.RegisteredClaims
 }
-
 // ===================== JWT Secret =====================
 var jwtSecret = []byte("my-super-secret-key-change-in-production-2024")
 

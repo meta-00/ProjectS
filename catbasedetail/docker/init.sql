@@ -20,14 +20,12 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE permissions (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -86,7 +84,7 @@ CREATE TABLE cat_breeds (
     care_instructions TEXT,
     image_url TEXT,
     
-    -- Engagement metrics (เอา rating ออก)
+    -- Engagement metrics 
     like_count INTEGER DEFAULT 0,
     dislike_count INTEGER DEFAULT 0,
     discussion_count INTEGER DEFAULT 0,
@@ -293,48 +291,156 @@ AFTER INSERT OR DELETE ON discussions
 FOR EACH ROW EXECUTE FUNCTION update_breed_discussion_count();
 
 
+-- ===================== INITIAL DATA =====================
 
-INSERT INTO cat_breeds (name, origin, description, care_instructions, image_url) VALUES
+-- Insert default roles
+INSERT INTO roles (name) VALUES
+('admin'),
+('user');
 
--- 1. Persian
-(
-    'Persian',
-    'Iran',
-    'ประวัติความเป็นมา
-ต้นกำเนิดของ Persian ย้อนกลับไปกว่า 400 ปีก่อน นักเดินทางชาวอิตาลีชื่อ Pietro Della Valle ได้พาแมวขนยาวจากเมือง Khorasan ในจักรวรรดิเปอร์เซีย(ปัจจุบันคืออิหร่าน) เข้ามายังยุโรปช่วงศตวรรษที่ 17 ก่อนเผยแพร่ไปยังฝรั่งเศสและอังกฤษ และกลายเป็นสัตว์เลี้ยงยอดนิยมของชนชั้นสูงในยุโรป
- พัฒนาการของสายพันธุ์
-หลังสงครามโลกครั้งที่สอง Breeder หันมาพัฒนาสายพันธุ์ภายใน ปรับโครงหน้าให้กลม อ่อนหวาน และดูแบ๊วขึ้น จนกลายเป็นเอกลักษณ์แบบอเมริกัน
- ลักษณะเด่นและนิสัย
- รูปลักษณ์: ใบหน้ากลม ดวงตาโต กลม จมูกสั้น หูเล็ก ปลายมน ลำตัวสั้น ขาใหญ่ กล้ามเนื้อแน่น ขนยาวหนานุ่ม มีชั้นขนละเอียด ที่ต้องได้รับการดูแลสม่ำเสมอ
- นิสัย: นุ่มนวล รักสงบ อ่อนโยน ไม่ชอบเสียงดัง ชอบอยู่ในที่เงียบสงบ อบอุ่น ชอบนั่งใกล้เจ้าของ คลอเคลียเบาๆ เหมาะกับผู้เลี้ยงที่ใส่ใจในรายละเอียด',
-    ' เคล็ดลับในการดูแล: แปรงขนทุกวันเพื่อป้องกันขนพันกัน ล้างหน้าเบาๆ โดยเฉพาะใต้ตา ดูแลด้วยความอ่อนโยนและสม่ำเสมอ',
-    'https://example.com/images/persian.jpg'
-),
--- 2. Siamese
-(
-    'Siamese',
-    'Thailand',
-    'ประวัติความเป็นมา
-ต้นกำเนิดของ Siamese พบครั้งแรกในประเทศไทย มีชื่อเดิมว่า “Wa-Siam” หรือ “แมวสยาม” เป็นที่รู้จักในราชสำนักไทยและถูกนำไปยุโรปช่วงศตวรรษที่ 19 โดยนักเดินทางชาวยุโรป
-พัฒนาการของสายพันธุ์
-Siamese เป็นที่นิยมในอังกฤษและอเมริกา ถูกปรับปรุงลักษณะให้เรียวยาว ตาเฉียงสีฟ้า และนิสัยช่างพูดโดดเด่น
-ลักษณะเด่นและนิสัย
-รูปลักษณ์: ตัวเรียว ขนสั้น ใบหน้าลู่ ตาสีฟ้า ปลายหูและหางเข้มกว่าสีตัว
-นิสัย: ขี้เล่น ช่างพูด ชอบเข้าสังคม รักเจ้าของ ชอบความสนใจ และฉลาด สามารถฝึกได้ง่าย',
-    'เคล็ดลับในการดูแล: เล่นกับเจ้าของบ่อย ๆ ให้กิจกรรมและของเล่นกระตุ้นสมอง แปรงขนสัปดาห์ละครั้งก็เพียงพอ',
-    'https://example.com/images/siamese.jpg'
-),
--- 3. Ragdoll
-(
-    'Ragdoll',
-    'USA',
-    'ประวัติความเป็นมา
-Ragdoll พัฒนาขึ้นในสหรัฐอเมริกาในปี 1960 โดย breeder ชื่อ Ann Baker ซึ่งได้ผสมแมวพันธุ์ Birman, Persian และ Angora จนได้แมวตัวใหญ่ ขนหนานุ่ม และนิสัยอ่อนโยน
-พัฒนาการของสายพันธุ์
-แมว Ragdoll มีชื่อเสียงเรื่องความใจเย็นและเชื่องมือ ทำให้เหมาะกับครอบครัว มีการปรับปรุงสายพันธุ์ให้คงความยาวขนและสีสวย
-ลักษณะเด่นและนิสัย
-รูปลักษณ์: ตัวใหญ่ ขนยาว หนานุ่ม ตาสีฟ้า หูและหางมีสีเข้ม
-นิสัย: อ่อนโยน ขี้อ้อน ชอบอยู่บนตัก กอดเจ้าของ สุภาพและสงบ',
-    'เคล็ดลับในการดูแล: แปรงขนสัปดาห์ละ 2–3 ครั้ง ตรวจฟันและหู ให้ความรักและการกอดอย่างสม่ำเสมอ',
-    'https://example.com/images/ragdoll.jpg'
+-- Insert permissions
+INSERT INTO permissions (name) VALUES
+-- Cat breed permissions
+('breed.create'),
+('breed.update'),
+('breed.delete'),
+('breed.view'),
+
+-- Discussion permissions
+('discussion.create'),
+('discussion.update'),
+('discussion.delete'),
+('discussion.delete.any'),
+
+-- Reaction permissions
+('reaction.create');
+
+-- Assign permissions to roles
+-- Admin gets all permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'admin';
+
+-- User gets limited permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p 
+WHERE r.name = 'user' AND p.name IN (
+    'breed.view',
+    'discussion.create', 'discussion.update', 'discussion.delete',
+    'reaction.create'
 );
+
+
+
+-- Insert sample cat breeds
+INSERT INTO cat_breeds (name, origin, description, care_instructions, image_url) VALUES
+('Persian', 'Iran', 
+ 'แมวเปอร์เซียเป็นสายพันธุ์ที่มีขนยาวและนุ่มนวล หน้าแบนและตาโต เป็นแมวที่นิ่งและชอบอยู่ในบ้าน มีนิสัยสงบเสงี่ยม เหมาะกับการเลี้ยงในอพาร์ทเมนท์',
+ 'ต้องหวีขนทุกวันเพื่อป้องกันขนพันกัน อาบน้ำเดือนละ 1-2 ครั้ง ตัดเล็บสม่ำเสมอ ทำความสะอาดรอบดวงตาเป็นประจำ',
+ 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131'),
+ 
+('Siamese', 'Thailand', 
+ 'แมวสยามเป็นแมวพันธุ์ไทย มีลักษณะเด่นคือหูใหญ่ ตาสีฟ้า ขนสีอ่อนจุดสีเข้มที่หู หน้า ขา และหาง มีนิสัยช่างพูด ชอบสนใจและเข้าหาเจ้าของ',
+ 'หวีขนสัปดาห์ละ 2-3 ครั้ง ชอบพูดคุยและต้องการความสนใจ ให้อาหารคุณภาพดี เล่นกับแมวเป็นประจำ',
+ 'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8'),
+ 
+('Maine Coon', 'United States', 
+ 'แมวเมนคูนเป็นแมวขนาดใหญ่ มีขนยาวและหนา เป็นมิตร ฉลาด และชอบเล่นกับน้ำ มีนิสัยอ่อนโยนและเป็นมิตรกับทุกคน',
+ 'หวีขนสัปดาห์ละ 2-3 ครั้ง ต้องการพื้นที่ออกกำลังกาย ให้อาหารโปรตีนสูง มีน้ำสะอาดให้ตลอดเวลา',
+ 'https://images.unsplash.com/photo-1574158622682-e40e69881006'),
+ 
+('Scottish Fold', 'Scotland',
+ 'แมวสก็อตติชโฟลด์มีลักษณะเด่นคือหูพับ ตัวกลม น่ารัก นิสัยอ่อนโยนและเป็นมิตร ชอบอยู่กับคนและสัตว์เลี้ยงอื่นๆ',
+ 'หวีขนสัปดาห์ละ 2-3 ครั้ง ตรวจหูสม่ำเสมอเพราะหูพับ เล่นกับแมวเป็นประจำ ให้ความรักและความสนใจ',
+ 'https://images.unsplash.com/photo-1568152950566-c1bf43f4ab28'),
+
+('British Shorthair', 'United Kingdom',
+ 'แมวบริติชชอร์ตแฮร์มีรูปร่างกลมอ้วน หน้ากลม แก้มป่อง ตาโต มีนิสัยสงบ อิสระ แต่ก็เป็นมิตรและรักเจ้าของ',
+ 'หวีขนสัปดาห์ละ 1-2 ครั้ง ควบคุมน้ำหนักเพราะชอบอ้วน ให้อาหารตามปริมาณที่เหมาะสม',
+ 'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91');
+
+
+-- ===================== INSERT USERS & ADMIN =====================
+
+-- สร้าง Users ทั่วไป
+-- หมายเหตุ: password_hash ในตัวอย่างนี้เป็นการ hash จาก bcrypt สำหรับรหัสผ่าน "password123"
+-- ในการใช้งานจริงควรใช้ bcrypt หรือ argon2 ในการ hash รหัสผ่าน
+
+INSERT INTO users (username, email, password_hash, is_active) VALUES
+-- Admin user (password: admin123)
+('admin', 'admin@catbreeds.com', '$2a$12$Jh17GEOUujYkjq/l/8JFsuSL.6xNamnMKVPWmyHskZZZUGU24Gbwq', true),
+
+-- Regular users (password: password123)
+('john_doe', 'john@example.com', '$2a$12$X./jfZnL4iH5tRwPdKO16OCDu5McGtDrwNIjjxItukO0rZzkjXFNe', true),
+-- Regular users (password: password1234)
+('jane_smith', 'jane@example.com', '$2a$12$5.XT7TZatli8vo3/Wsiez.OLaEc.AcTT29xVXeHKTqSC3hBGr6s..', true);
+
+-- ===================== INSERT ROLES =====================
+
+INSERT INTO roles (name) VALUES
+('admin'),
+('user');
+-- ===================== INSERT PERMISSIONS =====================
+
+INSERT INTO permissions (name) VALUES
+-- Breed Management
+('breed.create'),
+('breed.read'),
+('breed.update'),
+('breed.delete'),
+
+-- Discussion Management
+('discussion.create'),
+('discussion.read'),
+('discussion.update'),
+('discussion.delete'),
+
+-- Reaction Management
+('reaction.create'),
+('reaction.delete'),
+
+-- User Management
+('user.read'),
+('user.update'),
+('user.delete'),
+('user.manage_roles'),
+
+-- Audit
+('audit.read');
+
+-- ===================== ASSIGN ROLES TO USERS =====================
+
+-- Admin gets admin role
+INSERT INTO user_roles (user_id, role_id) VALUES
+(1, 1); -- admin user gets admin role
+
+-- Regular users get user role
+INSERT INTO user_roles (user_id, role_id) VALUES
+(2, 3), -- john_doe gets user role
+(3, 3), -- jane_smith gets user role
+(4, 3), -- cat_lover99 gets user role
+(5, 3), -- meow_master gets user role
+(6, 3); -- fluffy_fan gets user role
+
+-- ===================== ASSIGN PERMISSIONS TO ROLES =====================
+
+-- Admin role gets ALL permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 1, id FROM permissions;
+
+
+-- User role permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 3, id FROM permissions
+WHERE name IN (
+    'breed.read',
+    'discussion.create', 'discussion.read', 'discussion.update', 'discussion.delete',
+    'reaction.create', 'reaction.delete'
+);
+
+
+
+-- ===================== UPDATE LAST LOGIN =====================
+
+UPDATE users
+SET last_login = CURRENT_TIMESTAMP
+WHERE id IN (1, 2, 3);

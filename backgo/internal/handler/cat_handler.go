@@ -65,30 +65,34 @@ func GetCatHandler(c *gin.Context) {
 
 // CreateCatHandler handles POST /api/admin/cats (Admin only)
 func CreateCatHandler(c *gin.Context) {
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+    userIDVal, exists := c.Get("user_id")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+        return
+    }
+    userID := userIDVal.(int)
 
-	var req infoDB.CreateCatRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
-		return
-	}
+    var req infoDB.CreateCatRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "error":   "invalid request body",
+            "details": err.Error(),
+        })
+        return
+    }
 
-	cat, err := infoDB.CreateCat(userID.(int), req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    cat, err := infoDB.CreateCat(userID, req)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	c.JSON(http.StatusCreated, cat)
+    c.JSON(http.StatusCreated, cat)
 }
 
 // UpdateCatHandler handles PUT /api/admin/cats/:id (Admin only)
 func UpdateCatHandler(c *gin.Context) {
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -120,7 +124,7 @@ func UpdateCatHandler(c *gin.Context) {
 
 // DeleteCatHandler handles DELETE /api/admin/cats/:id (Admin only)
 func DeleteCatHandler(c *gin.Context) {
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return

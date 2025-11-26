@@ -2,7 +2,7 @@ package infoDB
 
 import (
 	"time"
-	
+	"database/sql"
 )
 
 // ===================== Cat Breed Models =====================
@@ -84,6 +84,11 @@ type ReactionResponse struct {
 	DislikeCount int     `json:"dislike_count"`
 }
 
+var db *sql.DB
+// ให้ main.go เรียกใช้ฟังก์ชันนี้หลังจาก initDB()
+func SetDB(d *sql.DB) {
+	db = d
+}
 
 // GET /cats
 func GetAllCats(currentUserID *int, limit, offset int) ([]Cat, error) {
