@@ -89,31 +89,27 @@ func RefreshTokenHandler(c *gin.Context) {
 	}
 
 	// Validate refresh token
-	userID, valid := infoDB.IsRefreshTokenValid(refreshToken)
-	if !valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
-		return
-	}
+	 userID, valid := infoDB.IsRefreshTokenValid(refreshToken)
+    if !valid {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
+        return
+    }
 
-	// Get user details
-	user, err := infoDB.GetUserByUsername("") // You might want to create GetUserByID
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
-		return
-	}
+    user, err := infoDB.GetUserByID(userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+        return
+    }
 
-	// Get user roles
-	roles, _ := infoDB.GetUserRoles(userID)
+    roles, _ := infoDB.GetUserRoles(userID)
 
-	// Generate new access token
-	accessToken, _ := infoDB.GenerateAccessToken(userID, user.Username, roles)
+    accessToken, _ := infoDB.GenerateAccessToken(userID, user.Username, roles)
 
-	// Set new access token cookie
-	c.SetCookie("access_token", accessToken, 900, "/", "", false, true)
+    c.SetCookie("access_token", accessToken, 900, "/", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "token refreshed successfully",
-	})
+    c.JSON(http.StatusOK, gin.H{
+        "message": "token refreshed successfully",
+    })
 }
 
 // LogoutHandler handles POST /api/auth/logout

@@ -112,6 +112,22 @@ func VerifyToken(tokenString string) (*CustomClaims, error) {
 	return nil, fmt.Errorf("invalid token")
 }
 
+//เพิ่มฟังก์ชัน GetUserByID
+func GetUserByID(id int) (User, error) {
+    var user User
+    query := `SELECT id, username, email, password_hash, is_active, created_at
+              FROM users WHERE id = $1`
+    err := db.QueryRow(query, id).Scan(
+        &user.ID,
+        &user.Username,
+        &user.Email,
+        &user.PasswordHash,
+        &user.IsActive,
+        &user.CreatedAt,
+    )
+    return user, err
+}
+
 // ===================== Database Queries =====================
 
 // GetUserByUsername retrieves user by username

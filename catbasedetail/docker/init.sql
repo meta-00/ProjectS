@@ -293,41 +293,47 @@ FOR EACH ROW EXECUTE FUNCTION update_breed_discussion_count();
 
 -- ===================== INITIAL DATA =====================
 
--- Insert default roles
-INSERT INTO roles (name) VALUES
-('admin'),
-('user');
+-- สร้าง roles
+INSERT INTO roles (name) VALUES ('admin'), ('user');
 
--- Insert permissions
+-- สร้าง permissions หลัก
 INSERT INTO permissions (name) VALUES
--- Cat breed permissions
-('breed.create'),
-('breed.update'),
-('breed.delete'),
-('breed.view'),
+-- Breed Management
+  ('breed.create'),
+  ('breed.read'),
+  ('breed.update'),
+  ('breed.delete'),
+  -- Discussion Management
+  ('discussion.create'),
+  ('discussion.read'),
+  ('discussion.update'),
+  ('discussion.delete'),
+  -- Reaction Management
+  ('reaction.create'),
+  ('reaction.delete'),
+  -- User Management
+  ('user.read'),
+  ('user.update'),
+  ('user.delete'),
+  ('user.manage_roles'),
+  ('audit.read');
 
--- Discussion permissions
-('discussion.create'),
-('discussion.update'),
-('discussion.delete'),
-('discussion.delete.any'),
-
--- Reaction permissions
-('reaction.create');
-
--- Assign permissions to roles
--- Admin gets all permissions
+-- ให้ admin ได้ทุก permission
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'admin';
+SELECT r.id, p.id
+FROM roles r, permissions p
+WHERE r.name = 'admin';
 
--- User gets limited permissions
+-- ให้ user ได้ subset
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT r.id, p.id FROM roles r, permissions p 
-WHERE r.name = 'user' AND p.name IN (
-    'breed.view',
-    'discussion.create', 'discussion.update', 'discussion.delete',
-    'reaction.create'
-);
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.name IN (
+  'breed.read',
+  'discussion.create', 'discussion.read', 'discussion.update', 'discussion.delete',
+  'reaction.create', 'reaction.delete'
+)
+WHERE r.name = 'user';
 
 
 
@@ -365,47 +371,15 @@ INSERT INTO cat_breeds (name, origin, description, care_instructions, image_url)
 -- หมายเหตุ: password_hash ในตัวอย่างนี้เป็นการ hash จาก bcrypt สำหรับรหัสผ่าน "password123"
 -- ในการใช้งานจริงควรใช้ bcrypt หรือ argon2 ในการ hash รหัสผ่าน
 
-INSERT INTO users (username, email, password_hash, is_active) VALUES
--- Admin user (password: admin123)
-('admin', 'admin@catbreeds.com', '$2a$12$Jh17GEOUujYkjq/l/8JFsuSL.6xNamnMKVPWmyHskZZZUGU24Gbwq', true),
+INSERT INTO users (username, email, password_hash, is_active)
+
+VALUES ('admin', 'admin@catbreeds.com', '$2a$12$W4jVLmEjChMfFQpJwktua.ARu91eNLgnpyRd9lp/zA54TrRgjQTje', true),
 
 -- Regular users (password: password123)
-('john_doe', 'john@example.com', '$2a$12$X./jfZnL4iH5tRwPdKO16OCDu5McGtDrwNIjjxItukO0rZzkjXFNe', true),
+('john_doe', 'john@example.com', '$2a$12$lygPOiUg5JgR1OAlpFmxO.rQ8uNbwxC2TwyPZIQCNZBPAaIOO7lkC', true),
 -- Regular users (password: password1234)
-('jane_smith', 'jane@example.com', '$2a$12$5.XT7TZatli8vo3/Wsiez.OLaEc.AcTT29xVXeHKTqSC3hBGr6s..', true);
+('jane_smith', 'jane@example.com', '$2a$12$ZfN7AjGj0AnnNqkl1Y.gqe.VOtpzvsm8DCYbjdykNQyS5Z20hNai6', true);
 
--- ===================== INSERT ROLES =====================
-
-INSERT INTO roles (name) VALUES
-('admin'),
-('user');
--- ===================== INSERT PERMISSIONS =====================
-
-INSERT INTO permissions (name) VALUES
--- Breed Management
-('breed.create'),
-('breed.read'),
-('breed.update'),
-('breed.delete'),
-
--- Discussion Management
-('discussion.create'),
-('discussion.read'),
-('discussion.update'),
-('discussion.delete'),
-
--- Reaction Management
-('reaction.create'),
-('reaction.delete'),
-
--- User Management
-('user.read'),
-('user.update'),
-('user.delete'),
-('user.manage_roles'),
-
--- Audit
-('audit.read');
 
 -- ===================== ASSIGN ROLES TO USERS =====================
 
@@ -415,11 +389,8 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 
 -- Regular users get user role
 INSERT INTO user_roles (user_id, role_id) VALUES
-(2, 3), -- john_doe gets user role
-(3, 3), -- jane_smith gets user role
-(4, 3), -- cat_lover99 gets user role
-(5, 3), -- meow_master gets user role
-(6, 3); -- fluffy_fan gets user role
+(2, 2), -- john_doe gets user role
+(3, 2); -- jane_smith gets user role
 
 -- ===================== ASSIGN PERMISSIONS TO ROLES =====================
 
@@ -430,7 +401,7 @@ SELECT 1, id FROM permissions;
 
 -- User role permissions
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT 3, id FROM permissions
+SELECT 2, id FROM permissions
 WHERE name IN (
     'breed.read',
     'discussion.create', 'discussion.read', 'discussion.update', 'discussion.delete',
